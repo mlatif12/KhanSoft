@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow – Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="dark">
+
+  <!-- Mobile overlay (closes sidebar when tapped outside) -->
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <div class="logo-icon-sm">T</div>
+      <span class="fw-bold" style="font-size:18px">TaskFlow</span>
+    </div>
+
+    <!-- User info (filled by JS) -->
+    <div class="mb-3 pb-3 sidebar-user-info">
+      <div class="avatar" id="sbAvatar">?</div>
+      <div class="fw-bold mt-2" id="sbName" style="font-size:14px">Name</div>
+      <div class="text-muted" id="sbEmail" style="font-size:12px">email</div>
+    </div>
+
+    <!-- Navigation buttons -->
+    <button class="nav-btn active" id="navDash" onclick="goTo('dashboard', this)">
+      <i class="bi bi-grid me-2"></i> Dashboard
+    </button>
+    <button class="nav-btn" id="navTasks" onclick="goTo('tasks', this)">
+      <i class="bi bi-check2-square me-2"></i> My Tasks
+    </button>
+
+    <!-- Bottom buttons (pushed to bottom with mt-auto) -->
+    <div class="mt-auto">
+      <button class="nav-btn" onclick="toggleTheme()">
+        <i class="bi bi-moon me-2" id="themeIcon"></i>
+        <span id="themeTxt">Light Mode</span>
+      </button>
+      <button class="nav-btn text-danger" onclick="doLogout()">
+        <i class="bi bi-box-arrow-left me-2"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <!-- Hamburger button (only shows on mobile) -->
+        <button class="btn btn-sm d-md-none hamburger-btn" onclick="openSidebar()">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <strong id="pageTitle" style="font-size:18px">Dashboard</strong>
+      </div>
+      <!-- Today's date (hidden on very small screens) -->
+      <span class="text-muted d-none d-sm-block" id="todayDate" style="font-size:13px"></span>
+    </div>
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <div id="pgDashboard" class="page active p-3 p-md-4">
+
+      <!-- 4 stat cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="stat-card card">
+            <div class="text-success mb-1"><i class="bi bi-list-task fs-4"></i></div>
+            <div class="stat-number" id="stTotal">0</div>
+            <div class="stat-label text-muted">Total</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card card">
+            <div class="text-danger mb-1"><i class="bi bi-circle fs-4"></i></div>
+            <div class="stat-number" id="stTodo">0</div>
+            <div class="stat-label text-muted">To Do</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card card">
+            <div class="text-warning mb-1"><i class="bi bi-hourglass-split fs-4"></i></div>
+            <div class="stat-number" id="stProgress">0</div>
+            <div class="stat-label text-muted">In Progress</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card card">
+            <div class="text-success mb-1"><i class="bi bi-check-circle fs-4"></i></div>
+            <div class="stat-number" id="stDone">0</div>
+            <div class="stat-label text-muted">Done</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="card p-3 mb-4">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-bold" style="font-size:14px">Overall Progress</span>
+          <span class="text-success fw-bold" id="progPct">0%</span>
+        </div>
+        <div class="progress" style="height:10px">
+          <div class="progress-bar bg-success" id="progBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Recent tasks list -->
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="fw-bold" style="font-size:15px">Recent Tasks</span>
+          <button class="btn btn-success btn-sm" onclick="goTo('tasks', null); openModal()">
+            <i class="bi bi-plus"></i> Add Task
+          </button>
+        </div>
+        <div id="recentList"></div>
+      </div>
+
+    </div>
+    <!-- end dashboard page -->
+
+    <!-- ── TASKS PAGE (Kanban board) ── -->
+    <div id="pgTasks" class="page p-3 p-md-4">
+
+      <!-- Search and filter bar -->
+      <div class="row g-2 mb-3">
+        <div class="col-12 col-md-4">
+          <input type="search" class="form-control" id="searchBox"
+                 placeholder="Search tasks…" oninput="renderKanban()" />
+        </div>
+        <div class="col-6 col-md-2">
+          <select class="form-select" id="filPriority" onchange="renderKanban()">
+            <option value="">All Priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <select class="form-select" id="filCategory" onchange="renderKanban()">
+            <option value="">All Categories</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Design">Design</option>
+            <option value="Dev">Dev</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 d-flex justify-content-md-end">
+          <button class="btn btn-success fw-bold w-100" onclick="openModal()">
+            <i class="bi bi-plus-lg"></i> New Task
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanban 3 columns -->
+      <div class="row g-3">
+
+        <!-- To Do column -->
+        <div class="col-12 col-md-4">
+          <div class="col-box">
+            <div class="col-title d-flex justify-content-between">
+              <span><span class="dot-red">●</span> To Do</span>
+              <span class="badge bg-secondary" id="cntTodo">0</span>
+            </div>
+            <div class="drop-zone" id="zoneTodo"
+              ondragover="onOver(event)"
+              ondrop="onDrop(event, 'todo')"
+              ondragleave="onLeave(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- In Progress column -->
+        <div class="col-12 col-md-4">
+          <div class="col-box">
+            <div class="col-title d-flex justify-content-between">
+              <span><span class="dot-yellow">●</span> In Progress</span>
+              <span class="badge bg-secondary" id="cntProgress">0</span>
+            </div>
+            <div class="drop-zone" id="zoneProgress"
+              ondragover="onOver(event)"
+              ondrop="onDrop(event, 'progress')"
+              ondragleave="onLeave(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Done column -->
+        <div class="col-12 col-md-4">
+          <div class="col-box">
+            <div class="col-title d-flex justify-content-between">
+              <span><span class="dot-green">●</span> Done</span>
+              <span class="badge bg-secondary" id="cntDone">0</span>
+            </div>
+            <div class="drop-zone" id="zoneDone"
+              ondragover="onOver(event)"
+              ondrop="onDrop(event, 'done')"
+              ondragleave="onLeave(event)">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- end tasks page -->
+
+  </div>
+  <!-- end main -->
+
+  <!-- ── TASK MODAL (Add / Edit popup) ── -->
+  <div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalHeading">New Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label class="form-label small-label">Title *</label>
+            <input type="text" class="form-control" id="fTitle" placeholder="What to do?" />
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label class="form-label small-label">Description</label>
+            <textarea class="form-control" id="fDesc" rows="2" placeholder="Optional…"></textarea>
+          </div>
+
+          <!-- Priority + Category -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small-label">Priority</label>
+              <select class="form-select" id="fPriority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small-label">Category</label>
+              <select class="form-select" id="fCategory">
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Design">Design</option>
+                <option value="Dev">Dev</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Status + Due Date -->
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label small-label">Status</label>
+              <select class="form-select" id="fStatus">
+                <option value="todo">To Do</option>
+                <option value="progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small-label">Due Date</label>
+              <input type="date" class="form-control" id="fDue" />
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success fw-bold" onclick="saveTask()">Save Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification container -->
+  <div id="toastBox"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Dashboard JS -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
