@@ -1,64 +1,63 @@
-# TaskFlow – Smart Task Manager
+# 🚀 TaskFlow — Smart Task Manager Dashboard
 
-A clean, beginner-friendly task manager built with HTML, CSS (Bootstrap 5), and vanilla JavaScript.
+A clean and beginner-friendly Smart Task Manager built with HTML, CSS and JavaScript.
+Built as part of the Frontend Intern Task for Digital Sphere & KhanSoft.
 
 ---
 
-## Folder Structure
+## 🌐 Live Preview
+Open `login.html` in your browser — no server needed!
 
+---
+
+## ✨ Features
+
+- 🔐 Login & Signup with validation
+- 📋 Kanban Board (To Do / In Progress / Done)
+- ➕ Add, Edit, Delete Tasks
+- 🖱️ Drag & Drop tasks between columns
+- 🌙 Dark / Light Mode toggle
+- 🔍 Search & Filter tasks
+- 💾 Data saved in browser (localStorage)
+- 📱 Fully Responsive (mobile friendly)
+
+---
+
+## 📁 Folder Structure
 ```
 TaskFlow/
-├── login.html       ← Sign In page
-├── signup.html      ← Create Account page
-├── dashboard.html   ← Main app (tasks, kanban board)
+├── login.html        ← Sign In page
+├── signup.html       ← Create Account page
+├── dashboard.html    ← Main app after login
 ├── css/
-│   └── style.css    ← All custom styles
+│   └── style.css     ← All custom styles
 └── js/
-    ├── login.js     ← Sign in logic
-    ├── signup.js    ← Sign up logic
-    └── dashboard.js ← All app logic (tasks, kanban, theme)
+    ├── login.js      ← Sign in logic
+    ├── signup.js     ← Sign up logic
+    └── dashboard.js  ← All app logic
 ```
 
 ---
 
-## How to Run
+## 🛠️ Built With
 
-Just open `login.html` in your browser. No server needed — everything runs in the browser using `localStorage`.
-
----
-
-## How It Works
-
-### Authentication
-- **Signup** (`signup.html` + `js/signup.js`): Saves a new user to `localStorage`.
-- **Login** (`login.html` + `js/login.js`): Checks credentials and saves a session.
-- **Logout** (`dashboard.js`): Clears the session and redirects to login.
-
-### Dashboard (`dashboard.html` + `js/dashboard.js`)
-- Checks for a valid session on load — redirects to login if none found.
-- **Stats**: Counts tasks by status (todo / in progress / done).
-- **Progress bar**: Shows % of tasks completed.
-- **Recent tasks**: Lists the 5 newest tasks with a checkbox toggle.
-- **Kanban board**: 3 columns with drag-and-drop support.
-- **Task modal**: Add or edit tasks (title, priority, category, status, due date).
-
-### Data Storage
-All data is stored in the browser's `localStorage`:
-- `users` — array of all registered users
-- `tasks_<userId>` — tasks for a specific user
-- `session` — the currently logged-in user
-- `theme` — saved theme preference (dark/light)
-
----
-
-## Key Concepts Used
-
-| Concept | Where |
+| Technology | Purpose |
 |---|---|
-| `localStorage` get/set | login.js, signup.js, dashboard.js |
-| DOM manipulation | dashboard.js — renderDashboard(), renderKanban() |
-| Event handling | HTML onclick attributes |
-| Array methods (filter, find, sort) | dashboard.js |
-| Bootstrap Modal | dashboard.js — bsModal.show() / hide() |
-| Drag & Drop API | dashboard.js — dragStart, onDrop |
-| CSS custom themes | style.css — body.dark / body.light |
+| HTML5 | Page structure |
+| CSS3 | Custom styling |
+| Bootstrap 5 | Layout & components |
+| Vanilla JavaScript | All logic |
+| localStorage | Saving data |
+
+## 🚀 How to Run
+
+1. Download or clone this repo
+2. Open the `login.html` file in your browser
+3. Create an account on the Signup page
+4. Start adding and managing your tasks!
+
+## 👨‍💻 Author
+
+Made with ❤️ as a Frontend Intern Task
+
+#digitalsphere #khansoft
